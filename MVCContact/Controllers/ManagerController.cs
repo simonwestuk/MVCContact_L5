@@ -22,9 +22,37 @@ namespace MVCContact.Views.Manager
         }
 
         // GET: Manager
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortBy, string searchBy)
         {
-            return View(await _context.Contact.Where(x => x.Owner == User.Identity.Name).ToListAsync());
+            List<ContactModel> contacts = new List<ContactModel>();
+
+            var data = from c in _context.Contact select c;
+
+            if (!String.IsNullOrEmpty(searchBy))
+            {
+                data = data.Where(x => x.Firstname.Contains(searchBy) || x.Surname.Contains(searchBy));
+            }
+
+            switch (sortBy)
+            {
+                case "firstname":
+                    data =  data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Firstname);
+                    break;
+                case "surname":
+                    data = data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Surname);
+                    break;
+                case "email":
+                    data = data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Email);
+                    break;
+                case "tel":
+                    data = data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Tel);
+                    break;
+                default:
+                    data = data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Firstname);
+                    break;
+            }
+
+            return View(await data.ToListAsync());
         }
 
         // GET: Manager/Details/5
@@ -100,6 +128,7 @@ namespace MVCContact.Views.Manager
             {
                 try
                 {
+                    contactModel.Owner = User.Identity.Name;
                     _context.Update(contactModel);
                     await _context.SaveChangesAsync();
                 }
