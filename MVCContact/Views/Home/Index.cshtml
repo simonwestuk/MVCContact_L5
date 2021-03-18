@@ -1,0 +1,20 @@
+﻿@model MVCContact.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6">
+            <partial name="_ContactsPartial" model="Model.Contacts" />
+        </div>
+        <div class="col-6">
+            <partial name="_MeetingsPartial" model="Model.Meetings" />
+        </div>
+
+
+    </div>
+
+</div>
+
