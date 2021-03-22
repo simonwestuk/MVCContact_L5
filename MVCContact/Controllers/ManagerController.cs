@@ -24,19 +24,22 @@ namespace MVCContact.Views.Manager
         // GET: Manager
         public async Task<IActionResult> Index(string sortBy, string searchBy)
         {
-            List<ContactModel> contacts = new List<ContactModel>();
 
             var data = from c in _context.Contact select c;
 
             if (!String.IsNullOrEmpty(searchBy))
             {
-                data = data.Where(x => x.Firstname.Contains(searchBy) || x.Surname.Contains(searchBy));
+                data = data.Where(x => x.Owner == User.Identity.Name && (x.Firstname.Contains(searchBy) || x.Surname.Contains(searchBy)));
             }
-
+            else
+            {
+                data =  data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Firstname);
+            }
+ 
             switch (sortBy)
             {
                 case "firstname":
-                    data =  data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Firstname);
+                    data = data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Firstname);
                     break;
                 case "surname":
                     data = data.Where(x => x.Owner == User.Identity.Name).OrderBy(s => s.Surname);
